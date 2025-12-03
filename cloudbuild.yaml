@@ -56,6 +56,8 @@ substitutions:
   _DB_PASSWORD: '1@mChampHealth'
   _VPC_CONNECTOR: hapi-fhir-connector
   _CLOUD_SQL_CONNECTION: champ-pov-app-dev:us-west1:hapi-fhir-db
+  _SHARED_VPC_PROJECT: champ-pov-shared-services
+  _VPC_NETWORK: champ-admin-vpc
 
 options:
   logging: CLOUD_LOGGING_ONLY

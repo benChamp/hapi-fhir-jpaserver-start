@@ -3,6 +3,8 @@ set -e
 
 # Configuration
 PROJECT_ID="champ-pov-app-dev"
+SHARED_VPC_PROJECT="champ-pov-shared-services"
+VPC_NETWORK="champ-admin-vpc"
 REGION="us-west1"
 DB_INSTANCE_NAME="hapi-fhir-db"
 DB_NAME="hapi"
@@ -62,28 +64,40 @@ else
   echo "Secret created!"
 fi
 
+# Verify shared VPC access
+echo "Verifying shared VPC access..."
+if gcloud compute networks describe $VPC_NETWORK --project=$SHARED_VPC_PROJECT &>/dev/null; then
+  echo "Shared VPC '$VPC_NETWORK' found in project '$SHARED_VPC_PROJECT'."
+else
+  echo "ERROR: Cannot access shared VPC '$VPC_NETWORK' in project '$SHARED_VPC_PROJECT'."
+  echo "Please ensure you have the necessary permissions."
+  exit 1
+fi
+
 # Allocate IP range for VPC peering (required for private IP)
 echo "Setting up VPC for private IP..."
-if gcloud compute addresses describe google-managed-services-default --global &>/dev/null; then
+if gcloud compute addresses describe google-managed-services-default --global --project=$SHARED_VPC_PROJECT &>/dev/null; then
   echo "VPC peering IP range already allocated."
 else
   gcloud compute addresses create google-managed-services-default \
     --global \
     --purpose=VPC_PEERING \
     --prefix-length=16 \
-    --network=default
+    --network=$VPC_NETWORK \
+    --project=$SHARED_VPC_PROJECT
   echo "VPC peering IP range allocated!"
 fi
 
 # Create VPC peering connection
 echo "Creating VPC peering connection..."
-if gcloud services vpc-peerings list --network=default | grep -q "servicenetworking.googleapis.com"; then
+if gcloud services vpc-peerings list --network=$VPC_NETWORK --project=$SHARED_VPC_PROJECT 2>/dev/null | grep -q "servicenetworking.googleapis.com"; then
   echo "VPC peering connection already exists."
 else
   gcloud services vpc-peerings connect \
     --service=servicenetworking.googleapis.com \
     --ranges=google-managed-services-default \
-    --network=default
+    --network=$VPC_NETWORK \
+    --project=$SHARED_VPC_PROJECT
   echo "VPC peering connection created!"
 fi
 
@@ -96,7 +110,7 @@ else
     --database-version=POSTGRES_15 \
     --tier=db-f1-micro \
     --region=$REGION \
-    --network=projects/$PROJECT_ID/global/networks/default \
+    --network=projects/$SHARED_VPC_PROJECT/global/networks/$VPC_NETWORK \
     --no-assign-ip \
     --database-flags=max_connections=100
   echo "Cloud SQL instance created!"
@@ -126,7 +140,7 @@ if gcloud compute networks vpc-access connectors describe $CONNECTOR_NAME --regi
 else
   gcloud compute networks vpc-access connectors create $CONNECTOR_NAME \
     --region=$REGION \
-    --network=default \
+    --network=projects/$SHARED_VPC_PROJECT/global/networks/$VPC_NETWORK \
     --range=10.8.0.0/28 \
     --min-instances=2 \
     --max-instances=3 \
