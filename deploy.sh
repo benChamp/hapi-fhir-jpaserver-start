@@ -42,12 +42,11 @@ gcloud run deploy $SERVICE_NAME \
   --min-instances=0 \
   --max-instances=10 \
   --vpc-connector=$VPC_CONNECTOR \
-  --set-env-vars="SPRING_DATASOURCE_URL=jdbc:postgresql:///${DB_NAME}?cloudSqlInstance=${CLOUD_SQL_CONNECTION}&socketFactory=com.google.cloud.sql.postgres.SocketFactory&user=${DB_USER}&password=1@mChampHealth" \
+  --set-env-vars="SPRING_DATASOURCE_URL=jdbc:postgresql://10.222.80.15:5432/${DB_NAME}" \
   --set-env-vars="SPRING_DATASOURCE_USERNAME=${DB_USER}" \
   --set-env-vars="SPRING_DATASOURCE_PASSWORD=1@mChampHealth" \
   --set-env-vars="SPRING_DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver" \
-  --set-env-vars="SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect" \
-  --add-cloudsql-instances=$CLOUD_SQL_CONNECTION
+  --set-env-vars="SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=ca.uhn.fhir.jpa.model.dialect.HapiFhirPostgresDialect"
 
 # Get the service URL
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --region=$REGION --format="value(status.url)")
