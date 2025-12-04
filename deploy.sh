@@ -25,8 +25,8 @@ CLOUD_SQL_CONNECTION=$(gcloud sql instances describe $DB_INSTANCE_NAME --format=
 echo "Cloud SQL Connection: $CLOUD_SQL_CONNECTION"
 
 # Build and tag the Docker image
-echo "Building Docker image..."
-docker build --target default -t ${IMAGE_NAME}:latest .
+echo "Building Docker image for linux/amd64..."
+docker build --platform linux/amd64 --target default -t ${IMAGE_NAME}:latest .
 
 # Push to Artifact Registry
 echo "Pushing image to Artifact Registry..."
