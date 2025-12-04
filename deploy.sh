@@ -42,6 +42,7 @@ gcloud run deploy $SERVICE_NAME \
   --min-instances=0 \
   --max-instances=10 \
   --vpc-connector=$VPC_CONNECTOR \
+  --vpc-egress=all-traffic \
   --set-env-vars="SPRING_DATASOURCE_URL=jdbc:postgresql://10.222.80.15:5432/${DB_NAME}" \
   --set-env-vars="SPRING_DATASOURCE_USERNAME=${DB_USER}" \
   --set-env-vars="SPRING_DATASOURCE_PASSWORD=1@mChampHealth" \

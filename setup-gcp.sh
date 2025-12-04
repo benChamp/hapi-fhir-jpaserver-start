@@ -153,7 +153,7 @@ if gcloud compute networks vpc-access connectors describe $CONNECTOR_NAME --regi
 else
   gcloud compute networks vpc-access connectors create $CONNECTOR_NAME \
     --region=$REGION \
-    --subnet=champ-admin-subnet-01 \
+    --subnet=hapi-connector-subnet \
     --subnet-project=$SHARED_VPC_PROJECT \
     --min-instances=2 \
     --max-instances=3 \
