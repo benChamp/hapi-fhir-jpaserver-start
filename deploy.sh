@@ -44,7 +44,7 @@ gcloud run deploy $SERVICE_NAME \
   --vpc-connector=$VPC_CONNECTOR \
   --vpc-egress=private-ranges-only \
   --add-cloudsql-instances=$CLOUD_SQL_CONNECTION \
-  --set-env-vars="SPRING_DATASOURCE_URL=jdbc:postgresql:///hapi?host=/cloudsql/${CLOUD_SQL_CONNECTION}&user=${DB_USER}&password=1@mChampHealth" \
+  --set-env-vars="SPRING_DATASOURCE_URL=jdbc:postgresql://localhost/${DB_NAME}?socketFactory=com.google.cloud.sql.postgres.SocketFactory&cloudSqlInstance=${CLOUD_SQL_CONNECTION}" \
   --set-env-vars="SPRING_DATASOURCE_USERNAME=${DB_USER}" \
   --set-env-vars="SPRING_DATASOURCE_PASSWORD=1@mChampHealth" \
   --set-env-vars="SPRING_DATASOURCE_DRIVERCLASSNAME=org.postgresql.Driver" \

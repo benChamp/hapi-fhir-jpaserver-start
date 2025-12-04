@@ -9,10 +9,10 @@ COPY server.xml .
 RUN mvn -ntp dependency:go-offline
 
 COPY src/ /tmp/hapi-fhir-jpaserver-starter/src/
-RUN mvn clean install -DskipTests -Djdk.lang.Process.launchMechanism=vfork
+RUN mvn clean install -DskipTests -Djdk.lang.Process.launchMechanism=vfork -Pcloudsql-postgres
 
 FROM build-hapi AS build-distroless
-RUN mvn package -DskipTests spring-boot:repackage -Pboot
+RUN mvn package -DskipTests spring-boot:repackage -Pboot,cloudsql-postgres
 RUN mkdir /app && cp /tmp/hapi-fhir-jpaserver-starter/target/ROOT.war /app/main.war
 
 
