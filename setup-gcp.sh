@@ -140,14 +140,11 @@ if gcloud compute networks vpc-access connectors describe $CONNECTOR_NAME --regi
 else
   gcloud compute networks vpc-access connectors create $CONNECTOR_NAME \
     --region=$REGION \
-    --network=$VPC_NETWORK \
-    --network-project=$SHARED_VPC_PROJECT \
-    --range=10.8.0.0/28 \
+    --subnet=champ-admin-subnet-01 \
+    --subnet-project=$SHARED_VPC_PROJECT \
     --min-instances=2 \
     --max-instances=3 \
     --machine-type=f1-micro
-  echo "VPC Access Connector created!"
-fi
   echo "VPC Access Connector created!"
 fi
 
