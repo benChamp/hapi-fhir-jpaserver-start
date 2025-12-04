@@ -74,6 +74,19 @@ else
   exit 1
 fi
 
+# Grant VPC Access service account permission to use shared VPC
+echo "Granting VPC Access permissions on shared VPC..."
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+VPC_ACCESS_SA="service-${PROJECT_NUMBER}@gcp-sa-vpcaccess.iam.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding $SHARED_VPC_PROJECT \
+  --member="serviceAccount:${VPC_ACCESS_SA}" \
+  --role="roles/compute.networkUser" \
+  --condition=None \
+  --quiet
+
+echo "VPC Access permissions granted."
+
 # Allocate IP range for VPC peering (required for private IP)
 echo "Setting up VPC for private IP..."
 if gcloud compute addresses describe google-managed-services-default --global --project=$SHARED_VPC_PROJECT &>/dev/null; then
